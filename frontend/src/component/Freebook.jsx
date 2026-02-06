@@ -1,12 +1,29 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
-import list from "../../public/list.json"
+
 import Card from './Cards';
+import axios from "axios";
+
 
 function Freebook () {
-  const filterData=list.filter((data)=>data.category==="Free");
+    const [filter,setfilter]=useState([])
+  useEffect(()=>{
+  const getBook=async()=>{
+try{
+ const res=await axios.get("http://localhost:4001/book");
+ 
+ const data=res.data.filter((data)=>data.category==="Free");
+ setfilter(data)
+
+}catch(error){
+  console.log(error);
+}
+  }  
+  getBook();
+  },[])
+  // const filterData=list.filter((data)=>data.category==="Free");
    var settings = {
     dots: true,
     infinite: false,
@@ -46,12 +63,12 @@ function Freebook () {
     <div className=' max-w-screen-2xl container mx-auto md:px-20 px-4'>
      <div>
        <h1 className='font-bold text-xl pd-2'>Free offer courese</h1>
-      <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Natus dolores quasi dolor deserunt consequatur quidem est doloremque, quia tenetur ratione, sunt inventore iure ullam .</p>
+      <p>A free offer course is a course that is provided at no cost to learners, allowing them to gain knowledge or skills without paying any fees. These courses are often offered for learning, promotion, skill development, or awareness, and may include video lectures, notes, assignments, or certificates (sometimes paid).</p>
      </div>
     
     <div>
    <Slider {...settings}>
-  {filterData.map((item) => (
+  {filter.map((item) => (
     <Card item={item} key={item.id} />
   ))}
 </Slider>

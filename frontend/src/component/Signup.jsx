@@ -1,17 +1,53 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import Login from "./Login";
 import { useForm } from "react-hook-form";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const Signup = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // ✅ email Banner se aayega
+  const emailFromBanner = location.state?.email || "";
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      email: emailFromBanner, // ✅ auto-fill
+    },
+  });
 
-  const onSubmit = (data) => {
-    console.log("Signup Data:", data);
+  const onSubmit = async (data) => {
+    const userInfo = {
+      fullname: data.fullname,
+      email: data.email,
+      password: data.password,
+    };
+
+    try {
+      const res = await axios.post(
+        "http://localhost:4001/user/signup",
+        userInfo
+      );
+
+      toast.success("Signup Successfully");
+
+      // ✅ Save user
+      localStorage.setItem("Users", JSON.stringify(res.data.user));
+
+      // ✅ Redirect properly
+      navigate("/");
+      window.location.reload();
+    } catch (err) {
+      if (err.response) {
+        toast.error(err.response.data.message || "Signup failed");
+      }
+    }
   };
 
   return (
@@ -25,30 +61,26 @@ const Signup = () => {
 
         <h3 className="text-2xl font-bold text-center mb-5">Signup</h3>
 
-        {/* FORM */}
         <form onSubmit={handleSubmit(onSubmit)}>
 
           {/* Name */}
           <div className="mb-3">
-            <label className="block text-sm font-medium">Name</label>
+            <label>Name</label>
             <input
-              type="text"
-              placeholder="Enter your name"
-              className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-orange-400"
-              {...register("name", { required: true })}
+              className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-orange-400"
+              {...register("fullname", { required: true })}
             />
-            {errors.name && (
+            {errors.fullname && (
               <p className="text-red-500 text-sm">Name is required</p>
             )}
           </div>
 
           {/* Email */}
           <div className="mb-3">
-            <label className="block text-sm font-medium">Email</label>
+            <label>Email</label>
             <input
               type="email"
-              placeholder="Enter your email"
-              className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-orange-400"
+              className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-orange-400"
               {...register("email", { required: true })}
             />
             {errors.email && (
@@ -58,11 +90,10 @@ const Signup = () => {
 
           {/* Password */}
           <div className="mb-4">
-            <label className="block text-sm font-medium">Password</label>
+            <label>Password</label>
             <input
               type="password"
-              placeholder="Enter your password"
-              className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-orange-400"
+              className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-orange-400"
               {...register("password", { required: true })}
             />
             {errors.password && (
@@ -70,30 +101,23 @@ const Signup = () => {
             )}
           </div>
 
-          {/* Signup Button */}
-          <button
-            type="submit"
-            className="w-full bg-orange-500 text-white py-2 rounded-md hover:bg-orange-600 transition"
-          >
+          <button className="w-full bg-orange-500 text-white py-2 rounded">
             Signup
           </button>
         </form>
 
-        {/* Login link */}
         <p className="text-center text-sm mt-4">
           Already have an account?{" "}
-          <button
+          <span
             className="text-blue-500 cursor-pointer"
             onClick={() => {
-              const modal = document.getElementById("my_modal_2");
-              if (modal) modal.showModal();
+              document.getElementById("my_modal_2")?.showModal();
             }}
           >
             Login
-          </button>
+          </span>
         </p>
 
-        {/* Login modal */}
         <Login />
       </div>
     </div>
