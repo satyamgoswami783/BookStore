@@ -5,10 +5,16 @@ import bookRoute from "./route/book.route.js";
 import cors from "cors"
 import useroute from "./route/user.route.js"
 const app = express();
-app.use(cors());
+
 app.use(express.json())
 app.use("/uploads", express.static("uploads"));
 dotenv.config();
+
+app.use(cors({
+  origin: "https://bookstore-035k.onrender.com",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 
 const PORT = process.env.PORT || 4000;
 const URI = process.env.MongoDBURI;
