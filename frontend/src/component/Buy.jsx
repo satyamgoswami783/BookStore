@@ -14,7 +14,7 @@ const Buy = () => {
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const res = await axios.get(`http://localhost:4001/book/${id}`);
+        const res = await axios.get(`https://bookstore-jarv.onrender.com/book/${id}`);
         setBook(res.data);
         console.log(res.data);
       } catch (err) {
