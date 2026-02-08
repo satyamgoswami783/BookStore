@@ -11,8 +11,10 @@ app.use("/uploads", express.static("uploads"));
 dotenv.config();
 
 app.use(cors({
-  origin: "https://bookstore-035k.onrender.com",
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: [
+    "https://bookstore-035k.onrender.com",
+    "http://localhost:5173"
+  ],
   credentials: true
 }));
 
@@ -20,17 +22,14 @@ const PORT = process.env.PORT || 4000;
 const URI = process.env.MongoDBURI;
 
 // MongoDB connection
-const connectDB = async () => {
-  try {
-    await mongoose.connect(URI);
-    console.log("✅ Connected to MongoDB");
-  } catch (error) {
-    console.error("❌ MongoDB connection error:", error.message);
-    process.exit(1);
-  }
-};
+mongoose.connect(URI)
+.then(() => console.log("✅ Connected to MongoDB"))
+.catch(err => {
+  console.error("❌ MongoDB connection error:", err.message);
+  process.exit(1);
+});
 
-connectDB();
+
 
 app.get("/", (req, res) => {
   res.send("MERN app project");
